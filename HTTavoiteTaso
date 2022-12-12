@@ -1,0 +1,99 @@
+import HTTavoiteKirjasto
+import numpy
+
+def Valikko():
+    print("Mitä haluat tehdä:")
+    print("1) Lue tiedosto")
+    print("2) Analysoi palautukset")
+    print("3) Tallenna tulokset")
+    print("4) Analysoi opiskelijoiden palautusmäärät")
+    print("5) Analysoi tuntikohtaiset palautukset")
+    print("6) Analysoi aikavälien palautukset")
+    print("0) Lopeta")
+    while True:
+        try:
+            valinta = int(input("Valintasi: "))
+            break
+        except ValueError:
+            print("Anna kokonaisluku.")
+    return valinta
+
+def paaohjelma():
+    lukulista = []
+    tiedot = []
+    tallenna = []
+    viikkolista = [0] * 52 # Viikkoja vuodessa
+    while True:
+        valinta = Valikko()
+        if valinta == 0:
+            lukulista.clear()
+            tiedot.clear()
+            tallenna.clear()
+            viikkolista.clear()
+            tietolista = []
+            opiskelijalista = []
+            matriisi = numpy.zeros((1), int)
+            matriisi2 = numpy.zeros((1), int)
+            print("Kiitos ohjelman käytöstä.")
+            break
+        elif valinta == 1:
+            HTTavoiteKirjasto.LueTiedosto(lukulista)
+        elif valinta == 2:
+            if len(lukulista) == 0:
+                print("Ei tietoja analysoitavaksi, lue tiedot ennen analyysiä.")
+                print()
+                print("Anna uusi valinta.")
+            else:
+                HTTavoiteKirjasto.AnalysoiPalautukset(tiedot, lukulista, tallenna)
+        elif valinta == 3:
+            if len(tiedot) == 0:
+                print("Ei tietoja tallennettavaksi, analysoi tiedot ennen tallennusta.")
+                print()
+                print("Anna uusi valinta.")
+            else:
+                HTTavoiteKirjasto.Tallenna(tallenna, tiedot)
+        elif valinta == 4:
+            if len(lukulista) == 0:
+                print("Ei tietoja analysoitavaksi, lue tiedot ennen analyysiä.")
+                print()
+                print("Anna uusi valinta.")
+            else:
+                suurin = 0
+                for i in lukulista:
+                    if (int(i.opiskelija[-3:]) > suurin):
+                        suurin = int(i.opiskelija[-3:])
+                tietolista = [0] * 61 # Tehtävien määrä
+                opiskelijalista = [0] * (suurin + 1) # Opiskelijoiden määrä
+                HTTavoiteKirjasto.AnalysoiOpiskelijat(lukulista, opiskelijalista, tietolista)
+                HTTavoiteKirjasto.TallennaPalautusmaarat(tietolista)
+                tietolista.clear()
+                opiskelijalista.clear()
+        elif valinta == 5:
+            if len(lukulista) == 0:
+                print("Ei tietoja analysoitavaksi, lue tiedot ennen analyysiä.")
+                print()
+                print("Anna uusi valinta.")
+            else:
+                RIVEJA = int(lukulista[-1].teht[1:3]) # Viikkojen määrä
+                SARAKKEITA = 24 # Tuntien määrä
+                matriisi = numpy.zeros((RIVEJA, SARAKKEITA), int)
+                HTTavoiteKirjasto.AnalysoiTuntikohtaiset(lukulista, viikkolista, matriisi)
+                HTTavoiteKirjasto.TallennaTuntikohtaiset(matriisi, lukulista)
+        elif valinta == 6:
+            if len(lukulista) == 0:
+                print("Ei tietoja analysoitavaksi, lue tiedot ennen analyysiä.")
+                print()
+                print("Anna uusi valinta.")
+            else:
+                SARAKKEITA = 7  # Aikavälien määrä
+                RIVEJA = int(lukulista[-1].teht[1:3]) # Viikkojen määrä
+                matriisi2 = numpy.zeros((RIVEJA, SARAKKEITA), int)
+                HTTavoiteKirjasto.AnalysoiAikavalit(lukulista, viikkolista, matriisi2)
+                HTTavoiteKirjasto.TallennaAikavalit(matriisi2, lukulista)
+        else:
+            print("Tuntematon valinta, yritä uudestaan.")
+            print()
+            print("Anna uusi valinta.")
+    return None
+
+paaohjelma()
